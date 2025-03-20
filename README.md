@@ -38,8 +38,8 @@ A modern, full-stack inventory management system for supply chains built with Ne
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/smart-inventory-management.git
-   cd smart-inventory-management
+   git clone https://github.com/shoppinh/fullstack-smart-inventory.git
+   cd fullstack-smart-inventory
    ```
 
 2. Install dependencies

@@ -1,13 +1,13 @@
 import { relations } from "drizzle-orm";
-import { 
-  integer, 
-  pgTable, 
-  text, 
-  timestamp, 
-  varchar, 
-  numeric, 
+import {
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+  numeric,
   uuid,
-  boolean
+  boolean,
 } from "drizzle-orm/pg-core";
 import { categories } from "./categories";
 import { suppliers } from "./suppliers";
@@ -43,4 +43,4 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     references: [suppliers.id],
   }),
   inventory: many(inventory),
-})); 
+}));

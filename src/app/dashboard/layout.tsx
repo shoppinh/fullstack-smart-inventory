@@ -76,7 +76,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background">
+      <header className="sticky top-0 z-40 border-b bg-background flex justify-center items-center">
         <div className="container flex h-16 items-center justify-between py-4">
           <Link href="/dashboard" className="flex items-center space-x-2">
             <Package className="h-6 w-6 text-primary" />

@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Before diving into the best practices, please note that you may need to adapt the globs depending on your project's specific structure and file types.
+
+---
+
+name: nextjs-best-practices.mdc
+description: Best practices for Next.js applications and routing
+globs: **/*.{ts,tsx,js,jsx}
+
+- Use the App Router for improved performance and simpler data fetching
+- Implement proper error boundaries to handle runtime errors gracefully
+- Utilize Next.js built-in optimizations like code splitting and image optimization
+- Leverage Incremental Static Regeneration (ISR) for dynamic content
+
+---
+
+name: react-best-practices.mdc
+description: Best practices for React component development and state management
+globs: **/*.{ts,tsx,js,jsx}
+
+- Use functional components with hooks instead of class components
+- Implement proper prop type validation using PropTypes or TypeScript
+- Utilize React.memo for performance optimization of pure components
+- Use context API or state management libraries like Zustand for global state
+
+---
+
+name: tailwindcss-best-practices.mdc
+description: Best practices for using Tailwind CSS in your project
+globs: **/*.{ts,tsx,js,jsx,css}
+
+- Use utility-first approach for styling components
+- Create custom utility classes for frequently used styles
+- Utilize Tailwind's responsive design classes for mobile-first development
+- Use @apply directive to create component-specific styles
+
+---
+
+name: shadcn-ui-best-practices.mdc
+description: Best practices for using Shadcn UI components
+globs: **/*.{ts,tsx,js,jsx}
+
+- Follow Shadcn UI's component structure and naming conventions
+- Customize components using the provided props and className
+- Use Shadcn UI's dark mode support for consistent theming
+- Extend components with additional functionality while maintaining accessibility
+
+---
+
+name: zustand-best-practices.mdc
+description: Best practices for state management with Zustand
+globs: **/*.{ts,tsx,js,jsx}
+
+- Use Zustand's middleware for devtools integration and persistence
+- Create separate stores for different domains of your application
+- Utilize TypeScript with Zustand for better type safety
+- Implement proper state normalization for complex data structures
+
+---
+
+name: drizzle-orm-best-practices.mdc
+description: Best practices for using Drizzle ORM with PostgreSQL
+globs: **/*.{ts,tsx,js,jsx}
+
+- Define your schema using Drizzle's type-safe schema definition
+- Use prepared statements and parameterized queries to prevent SQL injection
+- Implement proper transaction management for data consistency
+- Utilize Drizzle's query builder for complex queries and performance optimization
+
+---
+
+name: vercel-postgres-best-practices.mdc
+description: Best practices for using Vercel Postgres in your Next.js application
+globs: **/*.{ts,tsx,js,jsx}
+
+- Use Vercel's connection pooling for efficient database connections
+- Implement proper error handling and retries for database operations
+- Utilize Vercel's built-in database migrations for schema management
+- Optimize queries using indexes and appropriate data types
+
+---
+
+These best practices cover the major libraries and frameworks found in your project dependencies. Implement these guidelines to improve the quality, performance, and maintainability of your application.
