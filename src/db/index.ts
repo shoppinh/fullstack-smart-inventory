@@ -1,9 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import "dotenv/config";
+
 
 // For development with local postgres
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/inventory';
+const connectionString = process.env.DATABASE_URL ?? "";
 // For production with Vercel Postgres
 // import { sql } from '@vercel/postgres';
 // export const db = drizzle(sql, { schema });

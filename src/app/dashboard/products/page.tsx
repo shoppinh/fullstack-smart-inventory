@@ -1,8 +1,66 @@
+"use client";
+
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Product, ProductService } from "@/lib/services/product-service";
+import { formatCurrency } from "@/lib/utils";
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({
+    total: 0,
+    limit: 10,
+    offset: 0,
+    hasMore: false
+  });
+
+  useEffect(() => {
+    fetchProducts();
+  }, [pagination.offset, searchTerm]);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await ProductService.getProducts({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        search: searchTerm
+      });
+      
+      setProducts(response.products);
+      setPagination(response.pagination);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError("Failed to load products. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchProducts();
+  };
+
+  const handleNextPage = () => {
+    setPagination(prev => ({
+      ...prev,
+      offset: prev.offset + prev.limit
+    }));
+  };
+
+  const handlePreviousPage = () => {
+    setPagination(prev => ({
+      ...prev,
+      offset: Math.max(0, prev.offset - prev.limit)
+    }));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -20,17 +78,25 @@ export default function ProductsPage() {
         </Link>
       </div>
       
-      <div className="flex items-center gap-2">
+      <form onSubmit={handleSearch} className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <input
             type="search"
             placeholder="Search products..."
             className="w-full rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline">Filter</Button>
-      </div>
+        <Button variant="outline" type="submit">Search</Button>
+      </form>
+      
+      {error && (
+        <div className="rounded-md bg-red-50 p-4">
+          <div className="text-sm text-red-700">{error}</div>
+        </div>
+      )}
       
       <div className="rounded-md border">
         <div className="relative w-full overflow-auto">
@@ -39,40 +105,48 @@ export default function ProductsPage() {
               <tr className="border-b transition-colors data-[state=selected]:bg-muted">
                 <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">SKU</th>
                 <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Name</th>
-                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Category</th>
                 <th className="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Price</th>
-                <th className="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Stock</th>
                 <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
                 <th className="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody className="[&_tr:last-child]:border-0">
-              {generateProducts().map((product) => (
-                <tr key={product.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                  <td className="p-4 align-middle">{product.sku}</td>
-                  <td className="p-4 align-middle font-medium">{product.name}</td>
-                  <td className="p-4 align-middle">{product.category}</td>
-                  <td className="p-4 align-middle text-right">${product.price.toFixed(2)}</td>
-                  <td className="p-4 align-middle text-right">{product.stock}</td>
-                  <td className="p-4 align-middle">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      product.status === 'In Stock' 
-                        ? 'bg-green-100 text-green-800' 
-                        : product.status === 'Low Stock'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="p-4 align-middle text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm">Edit</Button>
-                      <Button variant="ghost" size="sm">View</Button>
-                    </div>
-                  </td>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="p-4 text-center">Loading products...</td>
                 </tr>
-              ))}
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-4 text-center">No products found</td>
+                </tr>
+              ) : (
+                products.map((product) => (
+                  <tr key={product.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    <td className="p-4 align-middle">{product.sku}</td>
+                    <td className="p-4 align-middle font-medium">{product.name}</td>
+                    <td className="p-4 align-middle text-right">{formatCurrency(Number(product.price))}</td>
+                    <td className="p-4 align-middle">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        product.isActive
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {product.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="p-4 align-middle text-right">
+                      <div className="flex justify-end gap-2">
+                        <Link href={`/dashboard/products/${product.id}/edit`}>
+                          <Button variant="ghost" size="sm">Edit</Button>
+                        </Link>
+                        <Link href={`/dashboard/products/${product.id}`}>
+                          <Button variant="ghost" size="sm">View</Button>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -80,39 +154,33 @@ export default function ProductsPage() {
       
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>42</strong> products
+          {pagination.total > 0 ? (
+            <span>
+              Showing <strong>{pagination.offset + 1}-{Math.min(pagination.offset + pagination.limit, pagination.total)}</strong> of <strong>{pagination.total}</strong> products
+            </span>
+          ) : (
+            <span>No products found</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>Previous</Button>
-          <Button variant="outline" size="sm">Next</Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handlePreviousPage}
+            disabled={pagination.offset === 0 || isLoading}
+          >
+            Previous
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleNextPage}
+            disabled={!pagination.hasMore || isLoading}
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>
   );
-}
-
-// Mock data generator
-function generateProducts() {
-  const products = [];
-  const categories = ["Electronics", "Office Supplies", "Furniture", "Kitchen", "Apparel"];
-  const statuses = ["In Stock", "Low Stock", "Out of Stock"];
-  
-  for (let i = 1; i <= 10; i++) {
-    const categoryIndex = Math.floor(Math.random() * categories.length);
-    const statusIndex = Math.floor(Math.random() * statuses.length);
-    const stock = statusIndex === 0 ? Math.floor(Math.random() * 100) + 30 : 
-                 statusIndex === 1 ? Math.floor(Math.random() * 20) + 1 : 0;
-    
-    products.push({
-      id: i,
-      name: `Product ${i}`,
-      sku: `SKU-${1000 + i}`,
-      category: categories[categoryIndex],
-      price: (Math.random() * 500 + 10),
-      stock,
-      status: statuses[statusIndex]
-    });
-  }
-  
-  return products;
 } 
