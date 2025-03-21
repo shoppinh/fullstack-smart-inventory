@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { LayoutGrid, Package, Boxes, Truck, Users, BarChart } from "lucide-react";
+import { LayoutGrid, Package, Boxes, Truck, Users, BarChart, ClipboardList } from "lucide-react";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -71,6 +71,11 @@ export default function DashboardLayout({
       href: "/dashboard/reports",
       title: "Reports",
       icon: <BarChart className="h-4 w-4" />,
+    },
+    {
+      href: "/dashboard/cases",
+      title: "Cases",
+      icon: <ClipboardList className="h-4 w-4" />,
     },
   ];
 

@@ -27,6 +27,31 @@ A modern, full-stack inventory management system for supply chains built with Ne
   - PostgreSQL database
   - Next.js API routes
 
+## Frontend-Backend Connection
+
+The application uses a service-based architecture to connect the frontend React components with the backend API routes:
+
+1. **Service Layer**: Each entity (products, suppliers, inventory) has a corresponding service file in `src/lib/services/` that handles API requests
+2. **API Routes**: Next.js API routes in `src/app/api/` implement CRUD operations for each entity
+3. **Database Connection**: API routes use Drizzle ORM to interact with the PostgreSQL database
+
+Here's a diagram of how the different layers interact:
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │     │                 │
+│  React UI       │────▶│  Service Layer  │────▶│  API Routes     │────▶│  Database       │
+│  (Components)   │     │  (API Clients)  │     │  (Controllers)  │     │  (Drizzle ORM)  │
+│                 │◀────│                 │◀────│                 │◀────│                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+Key connections:
+- **UI Components** use React hooks (`useState`, `useEffect`) to manage state and call service methods
+- **Service Layer** abstracts API calls, handles error conditions, and formats data for the UI
+- **API Routes** implement business logic, validate inputs, and execute database operations
+- **Drizzle ORM** provides type-safe database interactions with PostgreSQL
+
 ## Getting Started
 
 ### Prerequisites
@@ -63,10 +88,14 @@ A modern, full-stack inventory management system for supply chains built with Ne
 ## Project Structure
 
 - `/src/app` - Next.js App Router
+  - `/api` - API Routes for backend functionality
+  - `/dashboard` - Dashboard UI pages
+  - `/auth` - Authentication pages
 - `/src/components` - UI components
 - `/src/db` - Database schema and configuration
-- `/src/store` - Zustand state management
 - `/src/lib` - Utility functions and shared code
+  - `/services` - API service classes for frontend-backend communication
+- `/src/store` - Zustand state management
 
 ## Database Schema
 
